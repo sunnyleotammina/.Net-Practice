@@ -7,8 +7,7 @@
     protected void btnSearch_Click(object sender, EventArgs e)
     {
         //Connect to Database
-        SqlConnection con = new SqlConnection
-            (@"Data Source=(localdb)\mssqllocaldb;Initial Catalog=msdb;Integrated Security=True");
+        SqlConnection con = new SqlConnection(Database.ConnectionString);
         try
         {
             con.Open();

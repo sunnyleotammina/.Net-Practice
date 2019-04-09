@@ -7,22 +7,33 @@
     protected void btnGet_Click(object sender, EventArgs e)
     {
         //Connect to Database
-        SqlConnection con = new SqlConnection
-            (@"Data Source=(localdb)\mssqllocaldb;Initial Catalog=msdb;Integrated Security=True");
+        SqlConnection con = new SqlConnection(Database.ConnectionString);
         try
         {
             con.Open();
             SqlCommand cmd = new SqlCommand("select * from products where prodid=@prodid", con);
             cmd.Parameters.AddWithValue("@prodid", txtID.Text);
+
             SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
+            if(!reader.Read())
             {
+                lblMsg1.Text = "Product with the given ID is not found!";
+                txtName.Text = "";
+                txtPrice.Text = "";
+                txtQOH.Text = "";
+                txtRemarks.Text = "";
+                txtCatCode.Text = "";
+            }
+            else
+            {
+                //display data to user for editing
                 txtName.Text = reader["prodname"].ToString();
                 txtPrice.Text = reader["price"].ToString();
                 txtQOH.Text = reader["qoh"].ToString();
                 txtRemarks.Text = reader["remarks"].ToString();
                 txtCatCode.Text = reader["catcode"].ToString();
             }
+
 
         }
         catch(Exception ex)
@@ -38,8 +49,7 @@
     protected void btnUpdate_Click(object sender, EventArgs e)
     {
         //Connect to Database
-        SqlConnection con = new SqlConnection
-            (@"Data Source=(localdb)\mssqllocaldb;Initial Catalog=msdb;Integrated Security=True");
+        SqlConnection con = new SqlConnection(Database.ConnectionString);
         try
         {
             con.Open();
@@ -53,11 +63,11 @@
 
             int count = cmd.ExecuteNonQuery();
             if (count == 1)
-                lblMsg.Text = "Product has been updated Successfully!";
+                lblMsg2.Text = "Product has been updated Successfully!";
         }
         catch(Exception ex)
         {
-            lblMsg.Text = "Sorry Error:" + ex.Message;
+            lblMsg2.Text = "Sorry Error:" + ex.Message;
         }
         finally
         {
@@ -71,8 +81,10 @@
     <p>Product ID:
         <asp:TextBox ID="txtID" runat="server"></asp:TextBox>
 &nbsp;<asp:Button ID="btnGet" runat="server" Text="Get" OnClick="btnGet_Click" />
+        <asp:Label ID="lblMsg1" runat="server" Text="" EnableViewState="false"></asp:Label>
     </p>
     <p>&nbsp;</p>
+    <h4>Product Information</h4>
     
     <p>Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <asp:TextBox ID="txtName" runat="server"></asp:TextBox>
@@ -92,7 +104,7 @@
         <asp:Button ID="btnUpdate" runat="server" Text="Update" OnClick="btnUpdate_Click" />
     </p>
     <p>
-        <asp:Label ID="lblMsg" runat="server" Text="" EnableViewState="false"></asp:Label>
+        <asp:Label ID="lblMsg2" runat="server" Text="" EnableViewState="false"></asp:Label>
     </p>
 </asp:Content>
 
